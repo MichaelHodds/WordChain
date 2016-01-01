@@ -1,0 +1,72 @@
+doctype html
+html(lang="en")
+	head
+		meta(charset="utf-8")
+		title Word Chain Solver
+		//- Bootstrap
+		link(
+			rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+		)
+
+	body
+
+		#wordChain.container
+
+			.page-header: h1 Word Chain Solver
+
+			//- Word chain creator
+			.row: .panel.panel-info
+				.panel-heading Create Word Chain
+				.panel-body
+
+					//- Word chain config
+					form#chainForm(
+						action="wordchain"
+						method="get"
+						target="_blank"
+					)
+						.form-group
+							label(for="startWord") Start
+							.input-group
+								input#startWord.form-control(
+									name="start"
+									type="text"
+									placeholder="Start"
+									data-bind="textInput: fromWord"
+								)
+								span.input-group-addon(
+									data-bind="css: fromClass"
+								) &nbsp;
+
+						//- Word chain results
+						.form-group(data-bind="if: wordChain().length")
+							label Word Chain
+
+							ul.list-group(
+								data-bind="foreach: wordChain"
+								style="max-height: 33vh; overflow-y: auto;"
+							)
+								li.list-group-item
+									span(data-bind="text: $data")
+
+						.form-group
+							label(for="endWord") End
+							.input-group
+								input#endWord.form-control(
+									name="end"
+									type="text"
+									placeholder="End"
+									data-bind="textInput: toWord"
+								)
+								span.input-group-addon(
+									data-bind="css: toClass"
+								) &nbsp;
+						button.btn.btn-primary(type="submit") Solve
+
+		//- JQuery
+		script(src="https://code.jquery.com/jquery-1.11.3.min.js")
+		//- Knockout.js
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js")
+		//- Word Chain client
+		script(src="js/wordChain.js")

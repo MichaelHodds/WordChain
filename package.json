@@ -1,0 +1,31 @@
+{
+  "name": "amplience_task",
+  "version": "1.0.0",
+  "description": "Javascript Programming Task",
+  "author": "Michael Hodds <mhodds@outlook.com>",
+  "license": "UNLICENSED",
+  "main": "./main.js",
+  "repository": {},
+  "config": {
+    "port": 8080,
+    "dictionary": "./dictionary.txt"
+  },
+  "dependencies": {
+    "commander": "2.9.x",
+    "express": "4.13.x",
+    "jade": "1.11.x"
+  },
+  "devDependencies": {
+    "gulp": "3.9.x",
+    "gulp-istanbul": "0.10.x",
+    "gulp-jshint": "2.0.x",
+    "gulp-mocha": "2.2.x",
+    "jshint": "2.8.x",
+    "should": "8.0.x"
+  },
+  "scripts": {
+    "start": "node ./",
+    "test": "gulp test",
+    "posttest": "gulp coverage"
+  }
+}
