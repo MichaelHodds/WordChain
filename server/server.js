@@ -36,7 +36,7 @@ module.exports = function(port, dictionaryPath) {
 		var usage = process.memoryUsage();
 		// Shift bytes used to something a bit more readable
 		var memUsed = usage.rss >> 20;
-		console.log("Using around " + memUsed + "MB");
+		console.log("Using around " + memUsed + "MiB");
 
 		// Add word chain routes
 		app.use("/wordchain", wordChainRouter(tree));

@@ -1,5 +1,6 @@
 doctype html
 html(lang="en")
+
 	head
 		meta(charset="utf-8")
 		title Word Chain Solver
@@ -10,59 +11,62 @@ html(lang="en")
 		)
 
 	body
-
 		#wordChain.container
 
 			.page-header: h1 Word Chain Solver
 
 			//- Word chain creator
-			.row: .panel.panel-info
-				.panel-heading Create Word Chain
-				.panel-body
+			.row
 
-					//- Word chain config
-					form#chainForm(
-						action="wordchain"
-						method="get"
-						target="_blank"
+				.col-lg-6: .panel.panel-primary
+					.panel-heading Create Word Chain
+					.panel-body(style="max-height: 40vh; overflow-y: auto;")
+
+						//- Let clients with JS disabled get results
+						form#chainForm(
+							action="wordchain"
+							method="get"
+							target="_blank"
+						)
+							.form-group
+								label(for="startWord") Start
+								.input-group
+									input#startWord.form-control(
+										name="start"
+										type="text"
+										placeholder="Start"
+										data-bind="textInput: fromWord"
+									)
+									//- TODO Make feedback clearer
+									span.input-group-addon(
+										data-bind="css: fromClass"
+									) &nbsp;
+
+							.form-group
+								label(for="endWord") End
+								.input-group
+									input#endWord.form-control(
+										name="end"
+										type="text"
+										placeholder="End"
+										data-bind="textInput: toWord"
+									)
+									span.input-group-addon(
+										data-bind="css: toClass"
+									) &nbsp;
+							button.btn.btn-primary(type="submit") Solve
+
+				.col-lg-6: .panel.panel-success
+					.panel-heading Word Chain
+					.panel-body(
+						data-bind="if: wordChain().length"
+						style="max-height: 40vh; overflow-y: auto;"
 					)
-						.form-group
-							label(for="startWord") Start
-							.input-group
-								input#startWord.form-control(
-									name="start"
-									type="text"
-									placeholder="Start"
-									data-bind="textInput: fromWord"
-								)
-								span.input-group-addon(
-									data-bind="css: fromClass"
-								) &nbsp;
 
 						//- Word chain results
-						.form-group(data-bind="if: wordChain().length")
-							label Word Chain
-
-							ul.list-group(
-								data-bind="foreach: wordChain"
-								style="max-height: 33vh; overflow-y: auto;"
-							)
-								li.list-group-item
-									span(data-bind="text: $data")
-
-						.form-group
-							label(for="endWord") End
-							.input-group
-								input#endWord.form-control(
-									name="end"
-									type="text"
-									placeholder="End"
-									data-bind="textInput: toWord"
-								)
-								span.input-group-addon(
-									data-bind="css: toClass"
-								) &nbsp;
-						button.btn.btn-primary(type="submit") Solve
+						ul.list-group(data-bind="foreach: wordChain")
+							li.list-group-item
+								span(data-bind="text: $data")
 
 		//- JQuery
 		script(src="https://code.jquery.com/jquery-1.11.3.min.js")

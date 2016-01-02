@@ -5,14 +5,14 @@ var jshint = require("gulp-jshint");
 var mocha = require("gulp-mocha");
 
 gulp.task("default", function() {
-	return gulp.watch("./lib/*.js", [ "lint" ])
+	return gulp.watch("./{lib,server,public/js}/*.js", [ "lint" ])
 	.on('change', function(event) {
 		console.log("File " + event.path + " was " + event.type);
 	});
 });
 
 gulp.task("lint", function() {
-	return gulp.src("./lib/*.js")
+	return gulp.src("./{lib,server,public/js}/*.js")
 		.pipe(jshint())
 		.pipe(jshint.reporter("default"));
 });

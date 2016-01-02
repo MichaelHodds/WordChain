@@ -5,62 +5,63 @@ $(function() {
 
 	// Request a word chain
 	function getChain(query) {
-		$.getJSON("wordchain?" + query, function(data) {
-
-			// console.log(chainViewModel.fromWord(), chainViewModel.toWord());
-
-			console.log(data);
-			if (data) {
-				// Bind results to wordChain
-				chainViewModel.wordChain(data);
+		$.getJSON("wordchain?" + query)
+		.done(function(data, textStatus, jqXHR) {
+			if (data.success) {
+				chainViewModel.wordChain(data.chain);
 			} else {
 				chainViewModel.wordChain([ "Sorry, unable to solve" ]);
 			}
+		})
+		.fail(function(jqXHR, textStatus, errorThrown) {
+			alert(errorThrown);
 		});
-	};
+	}
 
-	// Check a given word is recognised
+	// Check a given word is in the server dictionary
 	function validateWord(word, callback) {
 		if (word) {
-			$.getJSON("wordchain/validate?word=" + word, callback);
+			$.get("wordchain/validate?word=" + word, callback);
 		} else {
 			callback(true);
 		}
-	};
+	}
 
+	// Create viewmodel for word chain solver
 	var chainViewModel = {
 		"wordChain": ko.observableArray(),
-		"fromWord": ko.observable().extend({ rateLimit: 1000 }),
+		"fromWord": ko.observable().extend({
+			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
+		}),
 		"fromValid": ko.observable(true),
-		"toWord": ko.observable().extend({ rateLimit: 1000 }),
+		"toWord": ko.observable().extend({
+			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
+		}),
 		"toValid": ko.observable(true)
 	};
 
 	// Validate "from" word
 	chainViewModel.fromWord.subscribe(function(newValue) {
-		validateWord(newValue, function(valid) {
-			chainViewModel.fromValid(valid);
-		});
+		validateWord(newValue, chainViewModel.fromValid);
 	});
+	// Determine class based on "from" validation
 	chainViewModel.fromClass = ko.pureComputed(function() {
 		return this.fromWord() ? this.fromValid() ? "label-success" : "label-danger" : "";
-	}, chainViewModel)
+	}, chainViewModel);
 
 	// Validate "to" word
 	chainViewModel.toWord.subscribe(function(newValue) {
-		validateWord(newValue, function(valid) {
-			chainViewModel.toValid(valid);
-		});
+		validateWord(newValue, chainViewModel.toValid);
 	});
+	// Determine class based on "to" validation
 	chainViewModel.toClass = ko.pureComputed(function() {
 		return this.toWord() ? this.toValid() ? "label-success" : "label-danger" : "";
-	}, chainViewModel)
-
+	}, chainViewModel);
 
 	// Bind viewmodel to wordchain solver
 	ko.applyBindings(chainViewModel, document.getElementById("wordChain"));
 
-	// Set up form for querying staff
+	// Override form submission handler
 	var chainForm = $(document.getElementById("chainForm"));
 	chainForm.on("submit", function(event) {
 		event.preventDefault();

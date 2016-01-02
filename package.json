@@ -1,11 +1,17 @@
 {
-  "name": "amplience_task",
+  "name": "WordChain",
   "version": "1.0.0",
-  "description": "Javascript Programming Task",
+  "description": "Word chain solver",
   "author": "Michael Hodds <mhodds@outlook.com>",
   "license": "UNLICENSED",
   "main": "./main.js",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MichaelHodds/WordChain"
+  },
+  "bugs": {
+    "url": "https://github.com/MichaelHodds/WordChain/issues"
+  },
   "config": {
     "port": 8080,
     "dictionary": "./dictionary.txt"
