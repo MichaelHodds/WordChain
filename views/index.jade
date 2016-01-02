@@ -22,12 +22,15 @@ html(lang="en")
 					.panel-heading Create Word Chain
 					.panel-body(style="max-height: 40vh; overflow-y: auto;")
 
+
 						//- Let clients with JS disabled get results
 						form#chainForm(
 							action="wordchain"
 							method="get"
 							target="_blank"
 						)
+							p.help-block Word chain solver is case-insensitive and limited to words of equal length
+
 							.form-group
 								label(for="startWord") Start
 								.input-group
@@ -37,7 +40,7 @@ html(lang="en")
 										placeholder="Start"
 										data-bind="textInput: fromWord"
 									)
-									//- TODO Make feedback clearer
+									//- TODO Make word feedback clearer
 									span.input-group-addon(
 										data-bind="css: fromClass"
 									) &nbsp;
@@ -54,19 +57,27 @@ html(lang="en")
 									span.input-group-addon(
 										data-bind="css: toClass"
 									) &nbsp;
+
 							button.btn.btn-primary(type="submit") Solve
 
 				.col-lg-6: .panel.panel-success
 					.panel-heading Word Chain
-					.panel-body(
-						data-bind="if: wordChain().length"
-						style="max-height: 40vh; overflow-y: auto;"
-					)
+					.panel-body(style="max-height: 40vh; overflow-y: auto;")
+
+						//- "Loading" indicator
+						.progress(data-bind="visible: loading")
+							.progress-bar.progress-bar-striped.active(
+								style="width: 100%;"
+							)
 
 						//- Word chain results
 						ul.list-group(data-bind="foreach: wordChain")
-							li.list-group-item
-								span(data-bind="text: $data")
+							li.list-group-item(
+								style="text-align: center;"
+							)
+								span(
+									data-bind="text: $data"
+								)
 
 		//- JQuery
 		script(src="https://code.jquery.com/jquery-1.11.3.min.js")

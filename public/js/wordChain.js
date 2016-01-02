@@ -5,6 +5,10 @@ $(function() {
 
 	// Request a word chain
 	function getChain(query) {
+		// Show loader
+		chainViewModel.loading(true);
+		// Clear current word chain, and request next chain
+		chainViewModel.wordChain([]);
 		$.getJSON("wordchain?" + query)
 		.done(function(data, textStatus, jqXHR) {
 			if (data.success) {
@@ -15,6 +19,10 @@ $(function() {
 		})
 		.fail(function(jqXHR, textStatus, errorThrown) {
 			alert(errorThrown);
+		})
+		.always(function() {
+			// Hide loader
+			chainViewModel.loading(false);
 		});
 	}
 
@@ -29,6 +37,7 @@ $(function() {
 
 	// Create viewmodel for word chain solver
 	var chainViewModel = {
+		"loading": ko.observable(false),
 		"wordChain": ko.observableArray(),
 		"fromWord": ko.observable().extend({
 			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
