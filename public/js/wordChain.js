@@ -31,7 +31,7 @@ $(function() {
 		if (word) {
 			$.get("wordchain/validate?word=" + word, callback);
 		} else {
-			callback(true);
+			callback(false);
 		}
 	}
 
@@ -42,20 +42,28 @@ $(function() {
 		"fromWord": ko.observable().extend({
 			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
 		}),
-		"fromValid": ko.observable(true),
+		"fromValid": ko.observable(false),
 		"toWord": ko.observable().extend({
 			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
 		}),
-		"toValid": ko.observable(true)
+		"toValid": ko.observable(false),
 	};
+
+	// Combination of both validation states
+	chainViewModel.validInputs = ko.pureComputed(function() {
+		return this.fromValid() && this.toValid();
+	}, chainViewModel);
 
 	// Validate "from" word
 	chainViewModel.fromWord.subscribe(function(newValue) {
 		validateWord(newValue, chainViewModel.fromValid);
 	});
 	// Determine class based on "from" validation
+	chainViewModel.fromFeedback = ko.pureComputed(function() {
+		return this.fromWord() ? this.fromValid() ? "has-success" : "has-error" : "";
+	}, chainViewModel);
 	chainViewModel.fromClass = ko.pureComputed(function() {
-		return this.fromWord() ? this.fromValid() ? "label-success" : "label-danger" : "";
+		return this.fromWord() ? this.fromValid() ? "glyphicon-ok" : "glyphicon-remove" : "";
 	}, chainViewModel);
 
 	// Validate "to" word
@@ -63,18 +71,23 @@ $(function() {
 		validateWord(newValue, chainViewModel.toValid);
 	});
 	// Determine class based on "to" validation
-	chainViewModel.toClass = ko.pureComputed(function() {
-		return this.toWord() ? this.toValid() ? "label-success" : "label-danger" : "";
+	chainViewModel.toFeedback = ko.pureComputed(function() {
+		return this.toWord() ? this.toValid() ? "has-success" : "has-error" : "";
 	}, chainViewModel);
-
+	chainViewModel.toClass = ko.pureComputed(function() {
+		return this.toWord() ? this.toValid() ? "glyphicon-ok" : "glyphicon-remove" : "";
+	}, chainViewModel);
 	// Bind viewmodel to wordchain solver
 	ko.applyBindings(chainViewModel, document.getElementById("wordChain"));
 
 	// Override form submission handler
-	var chainForm = $(document.getElementById("chainForm"));
-	chainForm.on("submit", function(event) {
+	$(document.getElementById("chainForm")).on("submit", function(event) {
 		event.preventDefault();
-		getChain($(this).serialize());
+		// Prevent most requests with invalid inputs
+		// Fast users can still submit with an invalid word after a valid word
+		if(chainViewModel.validInputs()) {
+			getChain($(this).serialize());
+		}
 	});
 
 });
