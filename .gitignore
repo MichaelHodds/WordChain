@@ -1,6 +1,10 @@
 # Node.js
 node_modules/
 
+# Visual Studio Code
+.vscode/
+typings/
+
 # Logs
 logs
 *.log

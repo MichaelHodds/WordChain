@@ -4,14 +4,14 @@
 
 var should = require("should");
 
-var textTree = require("../lib/textTree");
+var TextTree = require("../lib/textTree");
 
 var testTree = null;
 
 describe("Text tree", function() {
 
 	it("constructor", function() {
-		testTree = new textTree();
+		testTree = new TextTree();
 		should.exist(testTree);
 	});
 

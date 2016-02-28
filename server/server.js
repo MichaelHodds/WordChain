@@ -5,7 +5,7 @@
 var express = require("express");
 var wordChainRouter = require("./wordChainRouter");
 
-var textTree = require("../lib/textTree");
+var TextTree = require("../lib/textTree");
 
 module.exports = function(port, dictionaryPath) {
 
@@ -22,12 +22,12 @@ module.exports = function(port, dictionaryPath) {
 	app.set("view engine", "jade");
 
 	// Add route for page
-	app.get('/', function (req, res) {
+	app.get("/", function (req, res) {
 		res.render("index.jade");
 	});
 
 	// Load text tree
-	var tree = new textTree();
+	var tree = new TextTree();
 	tree.initialise(dictionaryPath, function (err, lineCount) {
 		if (err) {
 			return console.log(err);

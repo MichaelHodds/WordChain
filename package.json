@@ -1,5 +1,5 @@
 {
-  "name": "WordChain",
+  "name": "word-chain",
   "version": "1.0.0",
   "description": "Word chain solver",
   "author": "Michael Hodds <mhodds@outlook.com>",
@@ -14,7 +14,7 @@
   },
   "config": {
     "port": 8080,
-    "dictionary": "./dictionary.txt"
+    "dictionary": "./dictionary.txt.gz"
   },
   "dependencies": {
     "commander": "2.9.x",
@@ -31,6 +31,7 @@
   },
   "scripts": {
     "start": "node ./",
+    "lint": "gulp lint",
     "test": "gulp test",
     "posttest": "gulp coverage"
   }

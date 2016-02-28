@@ -4,7 +4,7 @@
 
 var should = require("should");
 
-var textTree = require("../lib/textTree");
+var TextTree = require("../lib/textTree");
 var wordChain = require("../lib/wordChain");
 
 var testTree = null;
@@ -13,7 +13,7 @@ describe("Text tree", function() {
 
 	it("should initialise from large dictionary", function(done) {
 		this.timeout(0);
-		testTree = new textTree();
+		testTree = new TextTree();
 		should.exist(testTree);
 		testTree.initialise("./dictionary.txt", function(err, lineCount) {
 			should.not.exist(err);
