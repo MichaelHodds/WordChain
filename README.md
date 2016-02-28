@@ -7,7 +7,7 @@ This simple word chain solver accepts a start word and end word, and attempts to
 Install 3rd party modules
  * `npm install`
 
-Run development tests **(requires gulp global install)**
+Run development tests **(requires devDependencies)**
  * `npm test`
 
 Run simple server (default dictionary, access on port 8080)
