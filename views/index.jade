@@ -23,61 +23,54 @@ html(lang="en")
 						v-bind:name="name"
 						type="text"
 						v-bind:placeholder="label"
-						v-bind:invalid="valid == false"
-						v-model="field"
+						v-model="word"
 						debounce="500"
 					)
 					span.glyphicon.form-control-feedback(
 						v-bind:class="feedbackIcon"
-					) {{ wordValid }}
+					)
 
 			.page-header: h1 Word Chain Solver
 
-			//- Word chain creator
 			.row
 
+				//- Word chain request builder
 				.col-lg-6: .panel.panel-primary
 					.panel-heading Create Word Chain
 					.panel-body(style="max-height: 40vh; overflow-y: auto;")
 
-						//- Let clients with JS disabled get results
 						form#chainForm(
 							action="wordchain"
 							method="get"
 							target="_blank"
 						)
 							p.help-block Word chain solver is case-insensitive and limited to words of equal length
-
 							valid-word(
 								id="form-start"
 								name="start"
 								label="Start"
-								v-bind:field.sync="fromWord"
+								v-bind:word.sync="fromWord"
 							)
-							
 							valid-word(
 								id="form-end"
 								name="end"
 								label="End"
-								v-bind:field.sync="toWord"
+								v-bind:word.sync="toWord"
 							)
-
 							button.btn.btn-primary(
 								type="submit"
 								v-bind:disabled="!validInputs"
 							) Solve
 
+				//- Word chain results display
 				.col-lg-6: .panel.panel-success
 					.panel-heading Word Chain
 					.panel-body(style="max-height: 40vh; overflow-y: auto;")
 
-						//- "Loading" indicator
 						.progress(v-show="loading")
 							.progress-bar.progress-bar-striped.active(
 								style="width: 100%;"
 							)
-
-						//- Word chain results
 						ul.list-group
 							li.list-group-item(
 								style="text-align: center;"

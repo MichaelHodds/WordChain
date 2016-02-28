@@ -11,11 +11,11 @@ var testTree = null;
 
 describe("Text tree", function() {
 
-	it("should initialise from large dictionary", function(done) {
+	it("should initialise from large gzip dictionary", function(done) {
 		this.timeout(0);
 		testTree = new TextTree();
 		should.exist(testTree);
-		testTree.initialise("./dictionary.txt", function(err, lineCount) {
+		testTree.initialise("./dictionary.txt.gz", function(err, lineCount) {
 			should.not.exist(err);
 			should.exist(lineCount);
 			lineCount.should.be.a.Number;

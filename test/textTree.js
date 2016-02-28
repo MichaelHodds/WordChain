@@ -15,7 +15,7 @@ describe("Text tree", function() {
 		should.exist(testTree);
 	});
 
-	it("should initialise handling invalid file", function(done) {
+	it("should initialise handling missing dictionary file", function(done) {
 		testTree.initialise("./test/nonexistant.txt", function(err, lineCount) {
 			should.exist(err);
 			err.should.be.an.Error();
@@ -23,7 +23,15 @@ describe("Text tree", function() {
 		});
 	});
 
-	it("should initialise from small dictionary", function(done) {
+	it("should initialise handling invalid dictionary file", function(done) {
+		testTree.initialise("./package.json", function(err, lineCount) {
+			should.exist(err);
+			err.should.be.an.Error();
+			return done();
+		});
+	});
+
+	it("should initialise from small text dictionary", function(done) {
 		this.timeout(0);
 		testTree.initialise("./test/dictionary-test.txt", function(err, lineCount) {
 			should.not.exist(err);

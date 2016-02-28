@@ -7,11 +7,7 @@ $(function() {
 	function getChain(query, callback) {
 		$.getJSON("wordchain?" + query)
 		.then(function(data, textStatus, jqXHR) {
-			if (data.success) {
-				callback(null, data.chain);
-			} else {
-				callback(null, "Unable to solve");
-			}
+			callback(null, data.success ? data.chain : [ "Unable to solve" ]);
 		}, function(jqXHR, textStatus, errorThrown) {
 			callback(errorThrown);
 		});
@@ -19,11 +15,7 @@ $(function() {
 
 	// Check a given word is in the server dictionary
 	function validateWord(word, callback) {
-		if (word) {
-			$.get("wordchain/validate?word=" + word, callback);
-		} else {
-			callback(false);
-		}
+		$.get("wordchain/validate?word=" + word, callback);
 	}
 
 	// Word entry component, validates word is present in dictionary
@@ -36,32 +28,35 @@ $(function() {
 			};
 		},
 		"computed": {
-			"wordValid": function() {
-				if (this.field) {
-					self = this;
-					validateWord(this.field, function(valid) {
-						self.valid = valid;
-						// Notify parent state of given element
-						self.$dispatch("validation", self._props.field.parentPath, valid);
-					});
-				} else {
-					self.$dispatch("validation", self.name, false);
-					this.valid = null;
-				}
-			},
 			"feedbackState": function() {
-				if (this.valid == null) {
+				if (this.valid === null) {
 					return "";
 				} else {
 					return this.valid ? "has-success" : "has-error";
 				}
 			},
 			"feedbackIcon": function() {
-				if (this.valid == null) {
+				if (this.valid === null) {
 					return "";
 				} else {
 					return this.valid ? "glyphicon-ok" : "glyphicon-remove";
 				}
+			}
+		},
+		"watch": {
+			// Validate input word and notify parent
+			"word": function(newValue) {
+				if (newValue) {
+					self = this;
+					validateWord(newValue, function(valid) {
+						self.valid = valid;
+						self.$dispatch("validation", self.name, valid);
+					});
+				} else {
+					this.valid = null;
+					this.$dispatch("validation", self.name, false);
+				}
+				
 			}
 		}
 	});
@@ -72,18 +67,18 @@ $(function() {
 		"data": {
 			"loading": false,
 			"wordChain": [],
-			"fromWord": "",
-			"fromWordValid": false,
-			"toWord": "",
-			"toWordValid": false
+			"startWord": "",
+			"startValid": false,
+			"endWord": "",
+			"endValid": false
 		},
 		"computed": {
 			"validInputs": function() {
-				return this.fromWordValid && this.toWordValid;
+				return this.startValid && this.endValid;
 			}
 		},
 		"events": {
-			// Forward element validation from "valid-word" component
+			// Bind element validation from "valid-word" component
 			"validation": function(element, state) {
 				this[element + "Valid"] = state;
 			}
@@ -91,19 +86,20 @@ $(function() {
 	});
 
 	// Override form submission handler
-	$(document.getElementById("chainForm")).on("submit", function(event) {
+	$(document.getElementById("chainForm")).submit(function(event) {
 		event.preventDefault();
 		// Show loader
 		chainViewModel.loading = true;
 		// Update word chain
-		chainViewModel.wordChain = []
-		getChain($(this).serialize(), function(err, chain) {
+		chainViewModel.wordChain = [];
+		getChain($(event.target).serialize(), function(err, chain) {
 			// Hide loader
 			chainViewModel.loading = false;
-			if(err) {
-				return alert(err);
+			if (err) {
+				alert(err);
+			} else {
+				chainViewModel.wordChain = chain;
 			}
-			chainViewModel.wordChain = chain;
 		});
 	});
 
