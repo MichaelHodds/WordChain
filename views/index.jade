@@ -4,7 +4,6 @@ html(lang="en")
 	head
 		meta(charset="utf-8")
 		title Word Chain Solver
-		//- Bootstrap
 		link(
 			rel="stylesheet"
 			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -12,6 +11,25 @@ html(lang="en")
 
 	body
 		#wordChain.container
+
+			//- Word validation component template
+			template#word-validator
+				.form-group.has-feedback(v-bind:class="feedbackState")
+					label.control-label(
+						v-bind:for="id"
+					) {{ label }}
+					input.form-control(
+						v-bind:id="id"
+						v-bind:name="name"
+						type="text"
+						v-bind:placeholder="label"
+						v-bind:invalid="valid == false"
+						v-model="field"
+						debounce="500"
+					)
+					span.glyphicon.form-control-feedback(
+						v-bind:class="feedbackIcon"
+					) {{ wordValid }}
 
 			.page-header: h1 Word Chain Solver
 
@@ -22,7 +40,6 @@ html(lang="en")
 					.panel-heading Create Word Chain
 					.panel-body(style="max-height: 40vh; overflow-y: auto;")
 
-
 						//- Let clients with JS disabled get results
 						form#chainForm(
 							action="wordchain"
@@ -31,33 +48,23 @@ html(lang="en")
 						)
 							p.help-block Word chain solver is case-insensitive and limited to words of equal length
 
-							.form-group.has-feedback(data-bind="css: fromFeedback")
-								label.control-label(for="startWord") Start
-								input#startWord.form-control(
-									name="start"
-									type="text"
-									placeholder="Start"
-									data-bind="textInput: fromWord"
-								)
-								span.glyphicon.form-control-feedback(
-									data-bind="css: fromClass"
-								)
-
-							.form-group.has-feedback(data-bind="css: toFeedback")
-								label.control-label(for="endWord") End
-								input#startWord.form-control(
-									name="end"
-									type="text"
-									placeholder="End"
-									data-bind="textInput: toWord"
-								)
-								span.glyphicon.form-control-feedback(
-									data-bind="css: toClass"
-								)
+							valid-word(
+								id="form-start"
+								name="start"
+								label="Start"
+								v-bind:field.sync="fromWord"
+							)
+							
+							valid-word(
+								id="form-end"
+								name="end"
+								label="End"
+								v-bind:field.sync="toWord"
+							)
 
 							button.btn.btn-primary(
 								type="submit"
-								data-bind="enable: validInputs"
+								v-bind:disabled="!validInputs"
 							) Solve
 
 				.col-lg-6: .panel.panel-success
@@ -65,23 +72,19 @@ html(lang="en")
 					.panel-body(style="max-height: 40vh; overflow-y: auto;")
 
 						//- "Loading" indicator
-						.progress(data-bind="visible: loading")
+						.progress(v-show="loading")
 							.progress-bar.progress-bar-striped.active(
 								style="width: 100%;"
 							)
 
 						//- Word chain results
-						ul.list-group(data-bind="foreach: wordChain")
+						ul.list-group
 							li.list-group-item(
 								style="text-align: center;"
+								v-for="word in wordChain"
 							)
-								span(
-									data-bind="text: $data"
-								)
+								span {{ word }}
 
-		//- JQuery
-		script(src="https://code.jquery.com/jquery-1.11.3.min.js")
-		//- Knockout.js
-		script(src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js")
-		//- Word Chain client
-		script(src="js/wordChain.js")
+		script(src="https://code.jquery.com/jquery-2.2.1.min.js")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js")
+		script(src="/js/wordChain.js")

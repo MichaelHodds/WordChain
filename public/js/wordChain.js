@@ -4,25 +4,16 @@ $(function() {
 	"use strict";
 
 	// Request a word chain
-	function getChain(query) {
-		// Show loader
-		chainViewModel.loading(true);
-		// Clear current word chain, and request next chain
-		chainViewModel.wordChain([]);
+	function getChain(query, callback) {
 		$.getJSON("wordchain?" + query)
-		.done(function(data, textStatus, jqXHR) {
+		.then(function(data, textStatus, jqXHR) {
 			if (data.success) {
-				chainViewModel.wordChain(data.chain);
+				callback(null, data.chain);
 			} else {
-				chainViewModel.wordChain([ "Sorry, unable to solve" ]);
+				callback(null, "Unable to solve");
 			}
-		})
-		.fail(function(jqXHR, textStatus, errorThrown) {
-			alert(errorThrown);
-		})
-		.always(function() {
-			// Hide loader
-			chainViewModel.loading(false);
+		}, function(jqXHR, textStatus, errorThrown) {
+			callback(errorThrown);
 		});
 	}
 
@@ -35,59 +26,85 @@ $(function() {
 		}
 	}
 
-	// Create viewmodel for word chain solver
-	var chainViewModel = {
-		"loading": ko.observable(false),
-		"wordChain": ko.observableArray(),
-		"fromWord": ko.observable().extend({
-			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
-		}),
-		"fromValid": ko.observable(false),
-		"toWord": ko.observable().extend({
-			rateLimit: { timeout: 500, method: "notifyWhenChangesStop" }
-		}),
-		"toValid": ko.observable(false),
-	};
-
-	// Combination of both validation states
-	chainViewModel.validInputs = ko.pureComputed(function() {
-		return this.fromValid() && this.toValid();
-	}, chainViewModel);
-
-	// Validate "from" word
-	chainViewModel.fromWord.subscribe(function(newValue) {
-		validateWord(newValue, chainViewModel.fromValid);
+	// Word entry component, validates word is present in dictionary
+	Vue.component("valid-word", {
+		"template": document.getElementById("word-validator"),
+		"props": [ "name", "label", "field" ],
+		"data": function() {
+			return {
+				"valid": null
+			};
+		},
+		"computed": {
+			"wordValid": function() {
+				if (this.field) {
+					self = this;
+					validateWord(this.field, function(valid) {
+						self.valid = valid;
+						// Notify parent state of given element
+						self.$dispatch("validation", self._props.field.parentPath, valid);
+					});
+				} else {
+					self.$dispatch("validation", self.name, false);
+					this.valid = null;
+				}
+			},
+			"feedbackState": function() {
+				if (this.valid == null) {
+					return "";
+				} else {
+					return this.valid ? "has-success" : "has-error";
+				}
+			},
+			"feedbackIcon": function() {
+				if (this.valid == null) {
+					return "";
+				} else {
+					return this.valid ? "glyphicon-ok" : "glyphicon-remove";
+				}
+			}
+		}
 	});
-	// Determine class based on "from" validation
-	chainViewModel.fromFeedback = ko.pureComputed(function() {
-		return this.fromWord() ? this.fromValid() ? "has-success" : "has-error" : "";
-	}, chainViewModel);
-	chainViewModel.fromClass = ko.pureComputed(function() {
-		return this.fromWord() ? this.fromValid() ? "glyphicon-ok" : "glyphicon-remove" : "";
-	}, chainViewModel);
 
-	// Validate "to" word
-	chainViewModel.toWord.subscribe(function(newValue) {
-		validateWord(newValue, chainViewModel.toValid);
+	// Word chain solver viewmodel
+	var chainViewModel = new Vue({
+		"el": document.getElementById("wordChain"),
+		"data": {
+			"loading": false,
+			"wordChain": [],
+			"fromWord": "",
+			"fromWordValid": false,
+			"toWord": "",
+			"toWordValid": false
+		},
+		"computed": {
+			"validInputs": function() {
+				return this.fromWordValid && this.toWordValid;
+			}
+		},
+		"events": {
+			// Forward element validation from "valid-word" component
+			"validation": function(element, state) {
+				this[element + "Valid"] = state;
+			}
+		}
 	});
-	// Determine class based on "to" validation
-	chainViewModel.toFeedback = ko.pureComputed(function() {
-		return this.toWord() ? this.toValid() ? "has-success" : "has-error" : "";
-	}, chainViewModel);
-	chainViewModel.toClass = ko.pureComputed(function() {
-		return this.toWord() ? this.toValid() ? "glyphicon-ok" : "glyphicon-remove" : "";
-	}, chainViewModel);
-	// Bind viewmodel to wordchain solver
-	ko.applyBindings(chainViewModel, document.getElementById("wordChain"));
 
 	// Override form submission handler
 	$(document.getElementById("chainForm")).on("submit", function(event) {
 		event.preventDefault();
-		// Prevent most requests with invalid inputs
-		// Fast users can still submit with an invalid word after a valid word
-		if(chainViewModel.validInputs()) {
-			getChain($(this).serialize());
-		}
+		// Show loader
+		chainViewModel.loading = true;
+		// Update word chain
+		chainViewModel.wordChain = []
+		getChain($(this).serialize(), function(err, chain) {
+			// Hide loader
+			chainViewModel.loading = false;
+			if(err) {
+				return alert(err);
+			}
+			chainViewModel.wordChain = chain;
+		});
 	});
 
 });
