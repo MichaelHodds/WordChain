@@ -6,29 +6,11 @@ html(lang="en")
 		title Word Chain Solver
 		link(
 			rel="stylesheet"
-			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 		)
 
 	body
 		#wordChain.container
-
-			//- Word validation component template
-			template#word-validator
-				.form-group.has-feedback(v-bind:class="feedbackState")
-					label.control-label(
-						v-bind:for="id"
-					) {{ label }}
-					input.form-control(
-						v-bind:id="id"
-						v-bind:name="name"
-						type="text"
-						v-bind:placeholder="label"
-						v-model="word"
-						debounce="500"
-					)
-					span.glyphicon.form-control-feedback(
-						v-bind:class="feedbackIcon"
-					)
 
 			.page-header: h1 Word Chain Solver
 
@@ -43,23 +25,22 @@ html(lang="en")
 							action="wordchain"
 							method="get"
 							target="_blank"
+							v-on:submit.prevent="submit"
 						)
 							p.help-block Word chain solver is case-insensitive and limited to words of equal length
 							valid-word(
-								id="form-start"
 								name="start"
 								label="Start"
-								v-bind:word.sync="fromWord"
+								v-on:validated="setStartValid"
 							)
 							valid-word(
-								id="form-end"
 								name="end"
 								label="End"
-								v-bind:word.sync="toWord"
+								v-on:validated="setEndValid"
 							)
 							button.btn.btn-primary(
 								type="submit"
-								v-bind:disabled="!validInputs"
+								v-bind:disabled="!wordsValid"
 							) Solve
 
 				//- Word chain results display
@@ -78,6 +59,24 @@ html(lang="en")
 							)
 								span {{ word }}
 
-		script(src="https://code.jquery.com/jquery-2.2.1.min.js")
-		script(src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js")
+		//- Word validation component template
+		script#word-validator(type="text/x-template")
+			.form-group.has-feedback(v-bind:class="feedbackState")
+				label.control-label(
+					v-bind:for="id"
+				) {{ label }}
+				input.form-control(
+					v-bind:id="id"
+					v-bind:name="name"
+					type="text"
+					v-bind:placeholder="label"
+					v-model="word"
+					v-on:input="onInput"
+				)
+				span.glyphicon.form-control-feedback(
+					v-bind:class="feedbackIcon"
+				)
+
+		script(src="https://code.jquery.com/jquery-3.1.1.min.js")
+		script(src="https://unpkg.com/vue@2.0.1/dist/vue.min.js")
 		script(src="/js/wordChain.js")

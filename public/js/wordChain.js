@@ -1,7 +1,6 @@
 // wordChain.js
 
 $(function() {
-	"use strict";
 
 	// Request a word chain
 	function getChain(query, callback) {
@@ -15,48 +14,49 @@ $(function() {
 
 	// Check a given word is in the server dictionary
 	function validateWord(word, callback) {
-		$.get("wordchain/validate?word=" + word, callback);
+		if (word) {
+			$.get("wordchain/validate?word=" + word, callback);
+		} else {
+			callback(false);
+		}
 	}
 
 	// Word entry component, validates word is present in dictionary
 	Vue.component("valid-word", {
 		"template": document.getElementById("word-validator"),
-		"props": [ "name", "label", "field" ],
+		"props": [ "name", "label" ],
 		"data": function() {
 			return {
-				"valid": null
+				"id": "input-" + Math.random(),
+				"word": "",
+				"valid": false,
+				"validated": false,
+				"timerId": null
 			};
 		},
 		"computed": {
 			"feedbackState": function() {
-				if (this.valid === null) {
-					return "";
-				} else {
-					return this.valid ? "has-success" : "has-error";
-				}
+				return this.validated ? (this.valid ? "has-success" : "has-error") : "";
 			},
 			"feedbackIcon": function() {
-				if (this.valid === null) {
-					return "";
-				} else {
-					return this.valid ? "glyphicon-ok" : "glyphicon-remove";
-				}
+				return this.validated ? (this.valid ? "glyphicon-ok" : "glyphicon-remove") : "";
 			}
 		},
-		"watch": {
-			// Validate input word and notify parent
-			"word": function(newValue) {
-				if (newValue) {
-					self = this;
-					validateWord(newValue, function(valid) {
-						self.valid = valid;
-						self.$dispatch("validation", self.name, valid);
-					});
-				} else {
-					this.valid = null;
-					this.$dispatch("validation", self.name, false);
-				}
-				
+		"methods": {
+			"onInput": function(event) {
+				// Any changes must be validated first
+				this.$emit("validated", false);
+				this.validated = false;
+				// "Debounce" word validation
+				clearTimeout(this.timerId);
+				this.timerId = setTimeout(this.validateWord, 400);
+			},
+			"validateWord": function() {
+				var self = this;
+				validateWord(self.word, function(valid) {
+					self.valid = valid;
+					self.$emit("validated", valid);
+				});
 			}
 		}
 	});
@@ -67,40 +67,35 @@ $(function() {
 		"data": {
 			"loading": false,
 			"wordChain": [],
-			"startWord": "",
 			"startValid": false,
-			"endWord": "",
 			"endValid": false
 		},
 		"computed": {
-			"validInputs": function() {
+			"wordsValid": function() {
 				return this.startValid && this.endValid;
 			}
 		},
-		"events": {
-			// Bind element validation from "valid-word" component
-			"validation": function(element, state) {
-				this[element + "Valid"] = state;
+		"methods": {
+			"setStartValid": function(valid) {
+				this.startValid = valid;
+			},
+			"setEndValid": function(valid) {
+				this.endValid = valid;
+			},
+			"submit": function(event) {
+				var self = this;
+				self.wordChain = [];
+				self.loading = true;
+				getChain($(event.target).serialize(), function(err, chain) {
+					self.loading = false;
+					if (err) {
+						alert(err);
+					} else {
+						self.wordChain = chain;
+					}
+				});
 			}
 		}
-	});
-
-	// Override form submission handler
-	$(document.getElementById("chainForm")).submit(function(event) {
-		event.preventDefault();
-		// Show loader
-		chainViewModel.loading = true;
-		// Update word chain
-		chainViewModel.wordChain = [];
-		getChain($(event.target).serialize(), function(err, chain) {
-			// Hide loader
-			chainViewModel.loading = false;
-			if (err) {
-				alert(err);
-			} else {
-				chainViewModel.wordChain = chain;
-			}
-		});
 	});
 
 });
