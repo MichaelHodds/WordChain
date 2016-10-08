@@ -54,6 +54,7 @@ $(function() {
 			"validateWord": function() {
 				var self = this;
 				validateWord(self.word, function(valid) {
+					self.validated = true;
 					self.valid = valid;
 					self.$emit("validated", valid);
 				});
