@@ -1,5 +1,4 @@
 // wordChain.js
-/* jshint node: true */
 "use strict";
 
 var should = require("should");

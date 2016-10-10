@@ -1,24 +1,28 @@
 // wordChain.js
 
-$(function() {
+document.addEventListener("DOMContentLoaded", function() {
 
 	// Request a word chain
 	function getChain(query, callback) {
-		$.getJSON("wordchain?" + query)
-		.then(function(data, textStatus, jqXHR) {
-			callback(null, data.success ? data.chain : [ "Unable to solve" ]);
-		}, function(jqXHR, textStatus, errorThrown) {
-			callback(errorThrown);
-		});
+		fetch("wordchain?" + query)
+		.then( function(response) {
+			return response.json();
+		}).then(function(json) {
+			callback(null, json.success ? json.chain : [ "Unable to solve" ]);
+		}).catch(callback);
 	}
 
 	// Check a given word is in the server dictionary
 	function validateWord(word, callback) {
-		if (word) {
-			$.get("wordchain/validate?word=" + word, callback);
-		} else {
-			callback(false);
+		if (!word) {
+			return callback(null, false);
 		}
+		fetch("wordchain/validate?word=" + word)
+		.then( function(response) {
+			return response.json();
+		}).then( function(json) {
+			callback(null, json);
+		}).catch(callback);
 	}
 
 	// Word entry component, validates word is present in dictionary
@@ -43,7 +47,7 @@ $(function() {
 			}
 		},
 		"methods": {
-			"onInput": function(event) {
+			"onInput": function() {
 				// Any changes must be validated first
 				this.$emit("validated", false);
 				this.validated = false;
@@ -53,20 +57,23 @@ $(function() {
 			},
 			"validateWord": function() {
 				var self = this;
-				validateWord(self.word, function(valid) {
-					self.validated = true;
-					self.valid = valid;
-					self.$emit("validated", valid);
+				validateWord(self.word, function(err, valid) {
+					if (err) {
+						alert(err);
+					} else {
+						self.validated = true;
+						self.valid = valid;
+						self.$emit("validated", valid);
+					}
 				});
 			}
 		}
 	});
 
 	// Word chain solver viewmodel
-	var chainViewModel = new Vue({
+	new Vue({
 		"el": document.getElementById("wordChain"),
 		"data": {
-			"loading": false,
 			"wordChain": [],
 			"startValid": false,
 			"endValid": false
@@ -85,11 +92,16 @@ $(function() {
 			},
 			"submit": function(event) {
 				var self = this;
-				self.wordChain = [];
-				self.loading = true;
-				getChain($(event.target).serialize(), function(err, chain) {
-					self.loading = false;
+				self.wordChain = [ "Working..." ];
+				// "Serialise" form (formatted for GET request)
+				var formData = new FormData(event.target);
+				var keyValList = [];
+				for(var pair of formData.entries()) {
+					keyValList.push(pair[0]+ "=" + pair[1])
+				}
+				getChain(keyValList.join("&"), function(err, chain) {
 					if (err) {
+						self.wordChain = [];
 						alert(err);
 					} else {
 						self.wordChain = chain;

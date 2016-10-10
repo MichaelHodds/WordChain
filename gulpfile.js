@@ -1,7 +1,7 @@
 var gulp = require("gulp");
 
+var eslint = require("gulp-eslint");
 var istanbul = require("gulp-istanbul");
-var jshint = require("gulp-jshint");
 var mocha = require("gulp-mocha");
 
 gulp.task("default", function() {
@@ -13,8 +13,9 @@ gulp.task("default", function() {
 
 gulp.task("lint", function() {
 	return gulp.src("./{lib,server,public/js}/*.js")
-		.pipe(jshint())
-		.pipe(jshint.reporter("default"));
+		.pipe(eslint())
+		.pipe(eslint.format())
+		.pipe(eslint.failAfterError());
 });
 
 gulp.task("test", function() {

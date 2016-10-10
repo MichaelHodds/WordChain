@@ -1,5 +1,5 @@
 // server.js
-/* jshint node: true */
+/* eslint-disable no-console */
 "use strict";
 
 var express = require("express");

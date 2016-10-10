@@ -1,5 +1,4 @@
 // main.js
-/* jshint node: true */
 "use strict";
 
 var info = require("./package.json");

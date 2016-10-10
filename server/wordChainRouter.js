@@ -1,5 +1,4 @@
 // wordChainRouter.js
-/* jshint node: true, esnext: true */
 "use strict";
 
 var express = require("express");
