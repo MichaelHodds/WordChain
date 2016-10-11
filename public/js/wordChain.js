@@ -2,29 +2,6 @@
 
 document.addEventListener("DOMContentLoaded", function() {
 
-	// Request a word chain
-	function getChain(query, callback) {
-		fetch("wordchain?" + query)
-		.then( function(response) {
-			return response.json();
-		}).then(function(json) {
-			callback(null, json.success ? json.chain : [ "Unable to solve" ]);
-		}).catch(callback);
-	}
-
-	// Check a given word is in the server dictionary
-	function validateWord(word, callback) {
-		if (!word) {
-			return callback(null, false);
-		}
-		fetch("wordchain/validate?word=" + word)
-		.then( function(response) {
-			return response.json();
-		}).then( function(json) {
-			callback(null, json);
-		}).catch(callback);
-	}
-
 	// Word entry component, validates word is present in dictionary
 	Vue.component("valid-word", {
 		"template": document.getElementById("word-validator"),
@@ -57,14 +34,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			},
 			"validateWord": function() {
 				var self = this;
-				validateWord(self.word, function(err, valid) {
-					if (err) {
-						alert(err);
-					} else {
-						self.validated = true;
-						self.valid = valid;
-						self.$emit("validated", valid);
-					}
+				// Request word validation
+				fetch("wordchain/validate?word=" + self.word)
+				.then( function(response) {
+					return response.json();
+				}).then( function(valid) {
+					self.validated = true;
+					self.valid = valid;
+					self.$emit("validated", valid);
+				}).catch( function(ex) {
+					alert(ex);
 				});
 			}
 		}
@@ -99,13 +78,18 @@ document.addEventListener("DOMContentLoaded", function() {
 				for(var pair of formData.entries()) {
 					keyValList.push(pair[0]+ "=" + pair[1])
 				}
-				getChain(keyValList.join("&"), function(err, chain) {
-					if (err) {
-						self.wordChain = [];
-						alert(err);
+				// Request a word chain
+				fetch("wordchain?" + keyValList.join("&"))
+				.then( function(response) {
+					return response.json();
+				}).then(function(json) {
+					if (json.success) {
+						self.wordChain = json.chain;
 					} else {
-						self.wordChain = chain;
+						self.wordChain = [ "Unable to solve" ];
 					}
+				}).catch( function(ex) {
+					alert(ex);
 				});
 			}
 		}
