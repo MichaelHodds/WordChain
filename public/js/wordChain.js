@@ -15,14 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				"timerId": null
 			};
 		},
-		"computed": {
-			"feedbackState": function() {
-				return this.validated ? (this.valid ? "has-success" : "has-error") : "";
-			},
-			"feedbackIcon": function() {
-				return this.validated ? (this.valid ? "glyphicon-ok" : "glyphicon-remove") : "";
-			}
-		},
 		"methods": {
 			"onInput": function() {
 				// Any changes must be validated first
@@ -30,7 +22,10 @@ document.addEventListener("DOMContentLoaded", function() {
 				this.validated = false;
 				// "Debounce" word validation
 				clearTimeout(this.timerId);
-				this.timerId = setTimeout(this.validateWord, 400);
+				// Only validate if input isn't empty
+				if (this.word) {
+					this.timerId = setTimeout(this.validateWord, 400);
+				}
 			},
 			"validateWord": function() {
 				var self = this;

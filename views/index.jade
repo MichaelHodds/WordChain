@@ -25,22 +25,22 @@ html(lang="en")
 							action="wordchain"
 							method="get"
 							target="_blank"
-							v-on:submit.prevent="submit"
+							@submit.prevent="submit"
 						)
 							p.help-block Word chain solver is case-sensitive and limited to words of equal length
 							valid-word(
 								name="start"
 								label="Start"
-								v-on:validated="setStartValid"
+								@validated="setStartValid"
 							)
 							valid-word(
 								name="end"
 								label="End"
-								v-on:validated="setEndValid"
+								@validated="setEndValid"
 							)
 							button.btn.btn-primary(
 								type="submit"
-								v-bind:disabled="!wordsValid"
+								:disabled="!wordsValid"
 							) Solve
 
 				//- Word chain results display
@@ -57,21 +57,29 @@ html(lang="en")
 
 		//- Word validation component template
 		script#word-validator(type="text/x-template")
-			.form-group.has-feedback(v-bind:class="feedbackState")
+			.form-group.has-feedback(:class=`
+				{
+					'has-success': validated && valid,
+					'has-error': validated && !valid
+				}
+			`)
 				label.control-label(
-					v-bind:for="id"
+					:for="id"
 				) {{ label }}
 				input.form-control(
-					v-bind:id="id"
-					v-bind:name="name"
+					:id="id"
+					:name="name"
 					type="text"
-					v-bind:placeholder="label"
+					:placeholder="label"
 					v-model="word"
-					v-on:input="onInput"
+					@input="onInput"
 				)
-				span.glyphicon.form-control-feedback(
-					v-bind:class="feedbackIcon"
-				)
+				span.glyphicon.form-control-feedback(:class=`
+					{
+						'glyphicon-ok': validated && valid,
+						'glyphicon-remove': validated && !valid
+					}
+				`)
 
-		script(src="https://unpkg.com/vue@2.0.1/dist/vue.min.js")
+		script(src="https://unpkg.com/vue@2.1.8/dist/vue.min.js")
 		script(src="/js/wordChain.js")

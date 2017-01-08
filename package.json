@@ -1,6 +1,6 @@
 {
   "name": "word-chain",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Word chain solver",
   "author": "Michael Hodds <mhodds@outlook.com>",
   "license": "UNLICENSED",
@@ -17,21 +17,20 @@
     "dictionary": "./dictionary.txt.gz"
   },
   "dependencies": {
-    "commander": "2.9.x",
-    "express": "4.13.x",
-    "jade": "1.11.x"
+    "commander": "^2.9.0",
+    "express": "^4.14.0",
+    "jade": "^1.11.0"
   },
   "devDependencies": {
-    "gulp": "3.9.x",
-    "gulp-istanbul": "0.10.x",
-    "gulp-eslint": "3.0.x",
-    "gulp-mocha": "2.2.x",
-    "should": "8.0.x"
+    "istanbul": "^0.4.5",
+    "eslint": "^3.13.0",
+    "mocha": "^3.2.0",
+    "should": "^11.1.2"
   },
   "scripts": {
     "start": "node ./",
-    "lint": "gulp lint",
-    "test": "gulp test",
-    "posttest": "gulp coverage"
+    "test": "mocha",
+    "coverage": "istanbul cover node_modules/mocha/bin/_mocha",
+    "lint": "eslint ./{lib,server,public/js}/*.js"
   }
 }
