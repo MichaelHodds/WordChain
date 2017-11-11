@@ -1,9 +1,11 @@
 {
-    "extends": "eslint:recommended",
-    "env": {
-        "browser": true
-    },
-    "globals": {
-        "Vue": false
-    }
+	"extends": "eslint:recommended",
+	"root": true,
+	"env": {
+		"es6": true,
+		"browser": true
+	},
+	"globals": {
+		"Vue": false
+	}
 }

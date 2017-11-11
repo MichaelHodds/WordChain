@@ -1,10 +1,23 @@
 {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaVersion": 6
-    },
-    "root": true,
-    "env": {
-        "node": true
-    }
+	"extends": "eslint:recommended",
+	"root": true,
+	"env": {
+		"es6": true,
+		"node": true
+	},
+	"rules": {
+		"arrow-parens": "error",
+		"callback-return": "error",
+		"camelcase": "error",
+		"eol-last": "error",
+		"global-require": "error",
+		"handle-callback-err": "error",
+		"new-cap": "error",
+		"no-lonely-if": "error",
+		"no-mixed-spaces-and-tabs": "error",
+		"no-shadow": "error",
+		"no-trailing-spaces": "error",
+		"no-var": "error",
+		"prefer-const": "error"
+	}
 }

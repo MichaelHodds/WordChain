@@ -2,15 +2,15 @@
 /* eslint-disable no-console */
 "use strict";
 
-var express = require("express");
-var wordChainRouter = require("./wordChainRouter");
+const express = require("express");
+const wordChainRouter = require("./wordChainRouter");
 
-var TextTree = require("../lib/textTree");
+const TextTree = require("../lib/textTree");
 
-module.exports = function(port, dictionaryPath) {
+module.exports = (port, dictionaryPath) => {
 
 	// Create wev server
-	var app = express();
+	const app = express();
 
 	// Set static folder for public files
 	app.use(express.static("public"));
@@ -19,32 +19,31 @@ module.exports = function(port, dictionaryPath) {
 
 	// Use jade templating engine
 	app.set("views", "views");
-	app.set("view engine", "jade");
+	app.set("view engine", "pug");
 
 	// Add route for page
-	app.get("/", function (req, res) {
-		res.render("index.jade");
+	app.get("/", (req, res) => {
+		res.render("index.pug");
 	});
 
 	// Load text tree
-	var tree = new TextTree();
-	tree.initialise(dictionaryPath, function (err, lineCount) {
+	const tree = new TextTree();
+	tree.initialise(dictionaryPath, (err, lineCount) => {
 		if (err) {
 			return console.log(err);
 		}
 		console.log("Populated tree from " + lineCount + " lines.");
-		var usage = process.memoryUsage();
+		const usage = process.memoryUsage();
 		// Shift bytes used to something a bit more readable
-		var memUsed = usage.rss >> 20;
+		const memUsed = usage.rss >> 20;
 		console.log("Using around " + memUsed + "MiB");
 
 		// Add word chain routes
 		app.use("/wordchain", wordChainRouter(tree));
 
 		// Start server on port
-		var server = app.listen(port, function() {
-			var host = server.address().address;
-			var port = server.address().port;
+		const server = app.listen(port, () => {
+			const host = server.address().address;
 			console.log("Server listening at http://" + host + port);
 		});
 

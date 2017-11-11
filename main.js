@@ -1,15 +1,14 @@
 // main.js
 "use strict";
 
-var info = require("./package.json");
-var defaultConfig = info.config
+const info = require("./package.json");
 
 // Parse command line arguments
-var program = require("commander");
+const program = require("commander");
 program
 .version(info.version)
-.option("-p, --port [number]", "Server Port", defaultConfig.port)
-.option("-d, --dictionary [path]", "Dictionary file", defaultConfig.dictionary)
+.option("-p, --port [number]", "Server Port", 8080)
+.option("-d, --dictionary [path]", "Dictionary file", "./dictionary.txt.gz")
 .parse(process.argv);
 
 // Start word-chain server

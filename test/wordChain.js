@@ -1,12 +1,12 @@
 // wordChain.js
 "use strict";
 
-var should = require("should");
+const should = require("should");
 
-var TextTree = require("../lib/textTree");
-var wordChain = require("../lib/wordChain");
+const TextTree = require("../lib/textTree");
+const wordChain = require("../lib/wordChain");
 
-var testTree = null;
+let testTree = null;
 
 describe("Text tree", function() {
 
@@ -29,12 +29,12 @@ describe("Word chain solver", function() {
 	this.timeout(0);
 
 	it("should not create chain for invalid words", function() {
-		var chain = wordChain(testTree, "xxxxx", "zzzzz");
+		const chain = wordChain(testTree, "xxxxx", "zzzzz");
 		should.not.exist(chain);
 	});
 
 	it("should create a word chain", function() {
-		var chain = wordChain(testTree, "lead", "gold");
+		const chain = wordChain(testTree, "lead", "gold");
 		should.exist(chain);
 		chain.should.be.an.Array();
 		chain.shift().should.equal("lead");
@@ -42,7 +42,7 @@ describe("Word chain solver", function() {
 	});
 
 	it("should create a word chain", function() {
-		var chain = wordChain(testTree, "market", "barter");
+		const chain = wordChain(testTree, "market", "barter");
 		should.exist(chain);
 		chain.should.be.an.Array();
 		chain.shift().should.equal("market");
@@ -50,7 +50,7 @@ describe("Word chain solver", function() {
 	});
 
 	it("should create a word chain", function() {
-		var chain = wordChain(testTree, "carry", "sough");
+		const chain = wordChain(testTree, "carry", "sough");
 		should.exist(chain);
 		chain.should.be.an.Array();
 		chain.shift().should.equal("carry");
@@ -58,7 +58,7 @@ describe("Word chain solver", function() {
 	});
 
 	it("should create a word chain", function() {
-		var chain = wordChain(testTree, "bread", "table");
+		const chain = wordChain(testTree, "bread", "table");
 		should.exist(chain);
 		chain.should.be.an.Array();
 		chain.shift().should.equal("bread");
@@ -66,7 +66,7 @@ describe("Word chain solver", function() {
 	});
 
 	it("should create a word chain", function() {
-		var chain = wordChain(testTree, "travel", "market");
+		const chain = wordChain(testTree, "travel", "market");
 		should.exist(chain);
 		chain.should.be.an.Array();
 		chain.shift().should.equal("travel");

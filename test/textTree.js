@@ -1,11 +1,11 @@
 // textTree.js
 "use strict";
 
-var should = require("should");
+const should = require("should");
 
-var TextTree = require("../lib/textTree");
+const TextTree = require("../lib/textTree");
 
-var testTree = null;
+let testTree = null;
 
 describe("Text tree", function() {
 
@@ -17,6 +17,7 @@ describe("Text tree", function() {
 	it("should initialise handling missing dictionary file", function(done) {
 		testTree.initialise("./test/nonexistant.txt", function(err, lineCount) {
 			should.exist(err);
+			should.not.exist(lineCount);
 			err.should.be.an.Error();
 			return done();
 		});
@@ -25,6 +26,7 @@ describe("Text tree", function() {
 	it("should initialise handling invalid dictionary file", function(done) {
 		testTree.initialise("./package.json", function(err, lineCount) {
 			should.exist(err);
+			should.not.exist(lineCount);
 			err.should.be.an.Error();
 			return done();
 		});
@@ -41,7 +43,7 @@ describe("Text tree", function() {
 	});
 
 	it("should get the tree path for a given word", function() {
-		var path = testTree.getPath("aba");
+		const path = testTree.getPath("aba");
 		should.exist(path);
 		path.should.be.an.Array()
 		.and.have.length(4);
