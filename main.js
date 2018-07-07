@@ -1,15 +1,13 @@
 // main.js
-"use strict";
-
-const info = require("./package.json");
 
 // Parse command line arguments
-const program = require("commander");
-program
-.version(info.version)
-.option("-p, --port [number]", "Server Port", 8080)
-.option("-d, --dictionary [path]", "Dictionary file", "./dictionary.txt.gz")
-.parse(process.argv);
+const argv = require('minimist')(process.argv, {
+	string: "dictionary",
+	default: {
+		port: 8080,
+		dictionary: "./dictionary.txt.gz"
+	}
+});
 
 // Start word-chain server
-require("./server/server.js")(program.port, program.dictionary);
+require("./server/server.js")(argv.port, argv.dictionary);

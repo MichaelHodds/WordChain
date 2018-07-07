@@ -10,8 +10,11 @@ Install 3rd party modules
 Run development tests **(requires devDependencies)**
  * `npm test`
 
-Run simple server (default dictionary, access on port 8080)
+Generate test coverage report **(requires devDependencies)**
+ * `npm run coverage`
+
+Run simple server with default dictionary, and on port 8080
  * `npm start`
 
-Run simple server (user defined dictionary and port)
- * `node ./ --dictionary [file path] --port [number]`
+Run simple server with user defined dictionary and/or port
+ * `npm start -- --dictionary [file path] --port [number]`

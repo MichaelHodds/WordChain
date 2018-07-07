@@ -1,6 +1,5 @@
 // server.js
 /* eslint-disable no-console */
-"use strict";
 
 const express = require("express");
 const wordChainRouter = require("./wordChainRouter");
@@ -30,12 +29,14 @@ module.exports = (port, dictionaryPath) => {
 	const tree = new TextTree();
 	tree.initialise(dictionaryPath, (err, lineCount) => {
 		if (err) {
-			return console.log(err);
+			console.err(err);
+			return;
 		}
 		console.log("Populated tree from " + lineCount + " lines.");
 		const usage = process.memoryUsage();
 		// Shift bytes used to something a bit more readable
-		const memUsed = usage.rss >> 20;
+		const megaByteShift = 20;
+		const memUsed = usage.rss >> megaByteShift;
 		console.log("Using around " + memUsed + "MiB");
 
 		// Add word chain routes

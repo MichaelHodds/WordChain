@@ -1,8 +1,8 @@
 {
   "name": "word-chain",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Word chain solver",
-  "author": "Michael Hodds <mhodds@outlook.com>",
+  "author": "Michael Pastuch",
   "license": "UNLICENSED",
   "main": "./main.js",
   "repository": {
@@ -13,20 +13,20 @@
     "url": "https://github.com/MichaelHodds/WordChain/issues"
   },
   "dependencies": {
-    "commander": "^2.11.0",
-    "express": "^4.16.2",
-    "pug": "^2.0.0-rc.4"
+    "express": "^4.16.3",
+    "minimist": "^1.2.0",
+    "pug": "^2.0.3"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
-    "eslint": "^4.11.0",
-    "mocha": "^4.0.1",
-    "should": "^13.1.3"
+    "eslint": "^5.0.1",
+    "mocha": "^5.2.0",
+    "nyc": "^12.0.2",
+    "should": "^13.2.1"
   },
   "scripts": {
     "start": "node ./",
     "test": "mocha",
-    "coverage": "istanbul cover node_modules/mocha/bin/_mocha",
+    "coverage": "nyc --reporter=html --reporter=text mocha",
     "lint": "eslint ./{lib,server,public/js}/*.js"
   }
 }

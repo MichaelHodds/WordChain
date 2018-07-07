@@ -1,26 +1,31 @@
 // wordChainRouter.js
-"use strict";
 
 const express = require("express");
 
 const wordChain = require("../lib/wordChain");
 
-//// reqHasKeys
-// Middleware for ensuring a given array of keys are present in a request query
+/**
+ * Middleware factory for validating express request
+ * @param {Array} keys expected keys in request query arguments
+ * @returns {function} express middleware
+ */
 function reqHasKeys(keys) {
 	return function (req, res, next) {
-		for (let i = 0, len = keys.length; i < len; ++i) {
+		for (let idx = 0, len = keys.length; idx < len; ++idx) {
 			// Ensure key is present
-			if (!req.query.hasOwnProperty(keys[i])) {
-				return res.status(400).send("Bad Request");
+			if (!req.query.hasOwnProperty(keys[idx])) {
+				return res.sendStatus(400);
 			}
 		}
 		next();
 	};
 }
 
-//// exports
-// Return word chain solving router for given text tree
+/**
+ * Provide word chain solving router for given text tree
+ * @param {Object} textTree TextTree instance
+ * @returns {Object} express router
+ */
 module.exports = (textTree) => {
 	const router = new express.Router();
 
@@ -30,7 +35,7 @@ module.exports = (textTree) => {
 		const chain = wordChain(textTree, req.query.start, req.query.end);
 		res.status(200)
 			.json({
-				"success": !!chain,
+				"success": Boolean(chain),
 				"chain": chain,
 				"timeTakenMS": Date.now() - startTS
 			});
